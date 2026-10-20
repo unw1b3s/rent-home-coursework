@@ -177,14 +177,16 @@ def listings(q: str = Query('',max_length=120), city: str = Query('',max_length=
 
 @app.get('/api/listings/{listing_id}', tags=['Каталог'])
 def listing(listing_id: int, request: Request):
+    try:
+        viewer = current_user(request)
+    except HTTPException:
+        viewer = None
     with connect() as db:
         row = listing_by_id(db,listing_id)
         owner = db.execute('SELECT active FROM users WHERE id=?',(row['owner_id'],)).fetchone()
-        if not owner['active']:
+        if not owner['active'] and not (viewer and viewer['role'] == 'admin'):
             raise HTTPException(404,'Объявление не найдено')
-    try:
-        current_user(request)
-    except HTTPException:
+    if not viewer:
         row.pop('phone')
     return row
 

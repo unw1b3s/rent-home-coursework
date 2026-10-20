@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-20",
+  "endpoint": "GET /api/listings",
+  "requests": 100,
+  "concurrency": 1,
+  "warmup": 5,
+  "records": 8,
+  "environment": "Darwin arm64, Python 3.14.7, Uvicorn, loopback HTTP",
+  "mean_ms": 0.81,
+  "p95_ms": 0.94,
+  "max_ms": 1.02,
+  "notes": "Локальный последовательный замер; не нагрузочное тестирование."
+}

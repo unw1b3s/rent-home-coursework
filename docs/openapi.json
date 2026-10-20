@@ -1,0 +1,1161 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ДомАренда API",
+    "description": "JSON API. После входа браузер получает HttpOnly cookie session. Для изменения данных передавайте X-CSRF-Token из ответа входа или GET /api/auth/me.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": [
+          "Сервис"
+        ],
+        "summary": "Health",
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "Авторизация"
+        ],
+        "summary": "Register",
+        "operationId": "register_api_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Register"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Авторизация"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": [
+          "Авторизация"
+        ],
+        "summary": "Me",
+        "operationId": "me_api_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": [
+          "Авторизация"
+        ],
+        "summary": "Logout",
+        "operationId": "logout_api_auth_logout_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": [],
+            "CSRFToken": []
+          }
+        ]
+      }
+    },
+    "/api/types": {
+      "get": {
+        "tags": [
+          "Каталог"
+        ],
+        "summary": "Types",
+        "operationId": "types_api_types_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/listings": {
+      "get": {
+        "tags": [
+          "Каталог"
+        ],
+        "summary": "Listings",
+        "operationId": "listings_api_listings_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 120,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80,
+              "default": "",
+              "title": "City"
+            }
+          },
+          {
+            "name": "type_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 4,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type Id"
+            }
+          },
+          {
+            "name": "max_price",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1000
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Max Price"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 6,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(newest|price_asc|price_desc)$",
+              "default": "newest",
+              "title": "Sort"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Объявления"
+        ],
+        "summary": "Create Listing",
+        "operationId": "create_listing_api_listings_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": [],
+            "CSRFToken": []
+          }
+        ]
+      }
+    },
+    "/api/listings/{listing_id}": {
+      "get": {
+        "tags": [
+          "Каталог"
+        ],
+        "summary": "Listing",
+        "operationId": "listing_api_listings__listing_id__get",
+        "parameters": [
+          {
+            "name": "listing_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Listing Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Объявления"
+        ],
+        "summary": "Update Listing",
+        "operationId": "update_listing_api_listings__listing_id__put",
+        "parameters": [
+          {
+            "name": "listing_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Listing Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": [],
+            "CSRFToken": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Объявления"
+        ],
+        "summary": "Delete Listing",
+        "operationId": "delete_listing_api_listings__listing_id__delete",
+        "parameters": [
+          {
+            "name": "listing_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Listing Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": [],
+            "CSRFToken": []
+          }
+        ]
+      }
+    },
+    "/api/my/listings": {
+      "get": {
+        "tags": [
+          "Личный кабинет"
+        ],
+        "summary": "My Listings",
+        "operationId": "my_listings_api_my_listings_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/listings/{listing_id}/requests": {
+      "post": {
+        "tags": [
+          "Заявки"
+        ],
+        "summary": "Send Request",
+        "operationId": "send_request_api_listings__listing_id__requests_post",
+        "parameters": [
+          {
+            "name": "listing_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Listing Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": [],
+            "CSRFToken": []
+          }
+        ]
+      }
+    },
+    "/api/my/requests": {
+      "get": {
+        "tags": [
+          "Заявки"
+        ],
+        "summary": "My Requests",
+        "operationId": "my_requests_api_my_requests_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/requests/{request_id}": {
+      "patch": {
+        "tags": [
+          "Заявки"
+        ],
+        "summary": "Change Request",
+        "operationId": "change_request_api_requests__request_id__patch",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Request Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentalStatus"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": [],
+            "CSRFToken": []
+          }
+        ]
+      }
+    },
+    "/api/admin/summary": {
+      "get": {
+        "tags": [
+          "Администрирование"
+        ],
+        "summary": "Summary",
+        "operationId": "summary_api_admin_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "tags": [
+          "Администрирование"
+        ],
+        "summary": "Users",
+        "operationId": "users_api_admin_users_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ]
+      }
+    },
+    "/api/admin/users/{user_id}": {
+      "patch": {
+        "tags": [
+          "Администрирование"
+        ],
+        "summary": "Block User",
+        "operationId": "block_user_api_admin_users__user_id__patch",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserStatus"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": [],
+            "CSRFToken": []
+          }
+        ]
+      }
+    },
+    "/api/admin/listings": {
+      "get": {
+        "tags": [
+          "Администрирование"
+        ],
+        "summary": "All Listings",
+        "operationId": "all_listings_api_admin_listings_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Сессия отсутствует или истекла"
+          },
+          "403": {
+            "description": "Нет прав или неверный CSRF-токен"
+          }
+        },
+        "security": [
+          {
+            "SessionCookie": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ListingInput": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 5,
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 3000,
+            "minLength": 20,
+            "title": "Description"
+          },
+          "type_id": {
+            "type": "integer",
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Type Id"
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 2,
+            "title": "City"
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 5,
+            "title": "Address"
+          },
+          "price": {
+            "type": "integer",
+            "maximum": 10000000.0,
+            "minimum": 1000.0,
+            "title": "Price"
+          },
+          "rooms": {
+            "type": "integer",
+            "maximum": 20.0,
+            "minimum": 0.0,
+            "title": "Rooms"
+          },
+          "area": {
+            "type": "number",
+            "maximum": 10000.0,
+            "minimum": 5.0,
+            "title": "Area"
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 7,
+            "title": "Phone"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "rented"
+            ],
+            "title": "Status",
+            "default": "available"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "type_id",
+          "city",
+          "address",
+          "price",
+          "rooms",
+          "area",
+          "phone"
+        ],
+        "title": "ListingInput"
+      },
+      "Login": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 5,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Password"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "Login"
+      },
+      "Register": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 5,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Password"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 2,
+            "title": "Name"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "name"
+        ],
+        "title": "Register"
+      },
+      "RentalInput": {
+        "properties": {
+          "move_in": {
+            "type": "string",
+            "format": "date",
+            "title": "Move In"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Message",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "move_in"
+        ],
+        "title": "RentalInput"
+      },
+      "RentalStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted",
+              "rejected",
+              "cancelled"
+            ],
+            "title": "Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "RentalStatus"
+      },
+      "UserStatus": {
+        "properties": {
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "active"
+        ],
+        "title": "UserStatus"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "SessionCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session"
+      },
+      "CSRFToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-CSRF-Token"
+      }
+    }
+  }
+}

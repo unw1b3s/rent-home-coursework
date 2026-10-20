@@ -1,0 +1,12 @@
+Docker verification — 20.10.2026
+Build: python:3.14-slim, successful
+Runtime: non-root student, persistent SQLite volume
+Health and 8 seed records: passed
+Registration, login and logout: passed
+Listing create/update/delete: passed
+Foreign update denial 403: passed
+Request creation and acceptance: passed
+Listing status synchronization: passed
+Initial catalog restored: passed
+Container restart and persistent 8 seed records: passed
+Browser address localhost:8000: passed

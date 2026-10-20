@@ -1,5 +1,7 @@
 from datetime import date, timedelta
 from app.db import connect
+from app.main import app
+from fastapi.testclient import TestClient
 
 
 def login(client,email):
@@ -117,7 +119,9 @@ def test_admin_and_blocking(client,listing,account,make_admin):
     assert client.patch('/api/admin/users/999',json={'active':False},headers=a).status_code==404
     assert client.patch(f"/api/admin/users/{owner['id']}",json={'active':False},headers=a).status_code==200
     assert client.get('/api/listings').json()['total']==0
-    assert client.get(f"/api/listings/{item['id']}").status_code==404
+    assert client.get(f"/api/listings/{item['id']}").status_code==200
+    with TestClient(app) as guest:
+        assert guest.get(f"/api/listings/{item['id']}").status_code==404
     assert client.post('/api/auth/login',json={'email':owner['email'],'password':'password123'}).status_code==401
     assert client.patch(f"/api/admin/users/{owner['id']}",json={'active':True},headers=a).status_code==200
     assert client.request('DELETE',f"/api/listings/{item['id']}",json={},headers=a).status_code==204
