@@ -1,0 +1,14 @@
+services:
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - rent-data:/app/data
+    environment:
+      DATABASE_PATH: /app/data/rent.db
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:8000}
+    restart: unless-stopped
+volumes:
+  rent-data:
